@@ -2,6 +2,8 @@
   <div class="block" >
     <el-button type="primary" plain size="large" @click="arrive">上班签到</el-button>
     <el-button type="success" plain size="large" @click="leave">下班签退</el-button>
+    <div style="float: right; margin-bottom: 20px;">
+    <el-button type="primary" size="large" @click="refresh" style="margin-right: 20px; margin-bottom: 5px;">刷新</el-button>
     <el-date-picker
       v-model="date"
       format="YYYY-MM-DD"
@@ -12,8 +14,9 @@
       size="large"
       value-format="YYYY-MM-DD"
       @change="calendarChange"
-      style="float: right; margin-bottom: 20px;"
+      
     />
+    </div>
   </div>
   <el-table :data="tableData" stripe style="width: 100%; margin-top: 30px;" border="true" >
     <el-table-column fixed prop="name" label="姓名" width="300" />
@@ -38,13 +41,14 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { getSelf, workArrive, workLeave, getSelfByTime } from '../../api/attend'
+import { getSelf, workArrive, workLeave } from '../../api/attend'
 import { ElMessage } from 'element-plus'
 import { Response, RESPONSE_CODE, AttendList, Attend } from '../../types/api'
+import { dataTool } from 'echarts';
 
 
 // 时间选择
-const date = ref('')
+const date = ref([])
 // 分页数据
 const total = ref(0)
 const curPage = ref(0)
@@ -53,12 +57,17 @@ const pageSize = ref(5)
 const tableData = ref([{}])
 
 onMounted(() => {
-  getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""))
+  getSelfData(curPage.value, pageSize.value, '', '', parseInt(localStorage.getItem("s_id") || ""))
 })
 
+const refresh = async () => {
+  date.value = []
+  getSelfData(curPage.value, pageSize.value, '', '', parseInt(localStorage.getItem("s_id") || ""))
+} 
+
 // 获取打卡记录
-const getSelfData = async (curPage: number, pageSize: number, id: number) => {
-  const res: Response<AttendList> = await getSelf(curPage, pageSize, id)
+const getSelfData = async (curPage: number, pageSize: number, date1: string, date2: string, id: number) => {
+  const res: Response<AttendList> = await getSelf(curPage, pageSize, date1, date2, id)
   console.log(res);
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.attend
@@ -69,17 +78,16 @@ const getSelfData = async (curPage: number, pageSize: number, id: number) => {
 
 // 分页
 const handleCurrentChange = (val: number) => {
-  curPage.value = val
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""))
+  getSelfData(curPage.value, pageSize.value, date.value[0] || '', date.value[1] || '', parseInt(localStorage.getItem("s_id") || ""))
 }
 
 // 返回日期
-const calendarChange = (date: string) => {
-  console.log(date[0], date[1]) 
-  getSelfDataByTime(date[0], date[1])
+const calendarChange = (datex: string[]) => {
+  console.log('date[0], date[1]', date.value) 
+  getSelfData(curPage.value, pageSize.value, datex[0], datex[1], parseInt(localStorage.getItem("s_id") || ""))
   // return date[0], date[1]
 }
 
@@ -108,7 +116,7 @@ const arrive = async () => {
   } else {
     if (res.code === RESPONSE_CODE.OK) {
       openSuccess("签到成功！")
-      getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""))
+      getSelfData(curPage.value, pageSize.value,  date.value[0] || '', date.value[1] || '',  parseInt(localStorage.getItem("s_id") || ""))
       console.log(tableData)
     }
   }
@@ -123,21 +131,21 @@ const leave = async () => {
   } else {
     if (res.code === RESPONSE_CODE.OK) {
       openSuccess("签退成功！")
-      getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""))
+      getSelfData(curPage.value, pageSize.value,  date.value[0] || '', date.value[1] || '', parseInt(localStorage.getItem("s_id") || ""))
       console.log(tableData)
     }
   }
 }
 
-// 时间筛选
-const getSelfDataByTime = async (date1: string, date2: string) => {
-  const res: Response<AttendList> = await getSelfByTime(curPage.value, pageSize.value, date1, date2, parseInt(localStorage.getItem("s_id")||''))
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    tableData.value = res.data.attend
-    total.value = res.data.count
-  }
-}
+// // 时间筛选
+// const getSelfDataByTime = async (date1: string, date2: string) => {
+//   const res: Response<AttendList> = await getSelfByTime(curPage.value, pageSize.value, date1, date2, parseInt(localStorage.getItem("s_id")||''))
+//   console.log(res);
+//   if (res.code === RESPONSE_CODE.OK) {
+//     tableData.value = res.data.attend
+//     total.value = res.data.count
+//   }
+// }
 
 // 消息提示
 const openSuccess = (msg: string) => {

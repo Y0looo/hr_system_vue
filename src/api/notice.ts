@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-export const getAllNotice = async (curPage: number, pageSize: number) => {
+export const getAllNotice = async (curPage: number, pageSize: number, name: string) => {
   var config = {
     method: 'get',
-    url: `http://localhost:9090/notice/getAll?curPage=${curPage}&pageSize=${pageSize}`,
+    url: `http://localhost:9090/notice/getAll?curPage=${curPage}&pageSize=${pageSize}&name=${name}`,
     headers: { }
   };
 
@@ -59,20 +59,6 @@ export const deleteNotice = async (id: number) => {
     url: `http://localhost:9090/notice/delete?id=${id}`,
     headers: { },
     data : data
-  };
-
-  try {
-    return await axios(config).then(res => res.data)
-  } catch(error: any) {
-    return error
-  }
-}
-
-export const getNoticeByName = async(curPage: number, pageSize: number, name: string) => {
-  var config = {
-    method: 'get',
-    url: `http://localhost:9090/notice/getByName?curPage=${curPage}&pageSize=${pageSize}&name=${name}`,
-    headers: { }
   };
 
   try {

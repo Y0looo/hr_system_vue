@@ -1,6 +1,6 @@
 <template>
   <el-input v-model="input" placeholder="请输入公告标题" style="width: 20%" />
-  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName(input)">搜索</el-button>
+  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName()">搜索</el-button>
   <el-table :data="tableData" style="width: 100%;margin-top: 20px" border="true" class="table">
     <el-table-column fixed prop="title" label="标题" width="250" :show-overflow-tooltip="true"/>
     <el-table-column prop="n_id" label="序号" width="250" />
@@ -20,7 +20,7 @@
 <script lang="ts" setup>
 import { onMounted, ref,  } from 'vue';
 import { Response, RESPONSE_CODE, NoticeList, Notice } from '../../types/api'
-import { getAllNotice, getNoticeByName,  } from '../../api/notice'
+import { getAllNotice  } from '../../api/notice'
 import { Search, } from '@element-plus/icons-vue'
 
 // 分页
@@ -32,8 +32,8 @@ const input = ref('')
 
 const tableData = ref([{}])
 
-const getData = async (curPage: number, pageSize: number) => {
-  const res: Response<NoticeList> = await getAllNotice(curPage, pageSize)
+const getData = async (curPage: number, pageSize: number, name: string) => {
+  const res: Response<NoticeList> = await getAllNotice(curPage, pageSize, name)
   console.log(res);
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.notice
@@ -43,21 +43,13 @@ const getData = async (curPage: number, pageSize: number) => {
 }
 
 onMounted(() => {
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
   
 })
 
 // 根据公告名称搜索
-const searchByName = async (name: string) => {
-  const res: Response<NoticeList> = await getNoticeByName(curPage.value, pageSize.value, name)
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    console.log(tableData)
-    // tableData.shift()
-    tableData.value = res.data.notice
-    total.value = res.data.count
-    console.log(tableData)
-  }
+const searchByName = async () => {
+  getData(curPage.value, pageSize.value, input.value)
 }
 
 const handleCurrentChange = (val: number) => {
@@ -65,6 +57,6 @@ const handleCurrentChange = (val: number) => {
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
 }
 </script>

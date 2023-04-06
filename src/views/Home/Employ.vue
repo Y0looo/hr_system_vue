@@ -1,6 +1,6 @@
 <template>
   <el-input v-model="input" placeholder="请输入招聘岗位名称" style="width: 20%" />
-  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName(input)">搜索</el-button>
+  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName()">搜索</el-button>
   <el-button type="primary" :icon="Plus" style="float:right" @click="drawer2 = true">新增招聘信息</el-button>
   <el-table :data="tableData" style="width: 100%;margin-top: 20px" border="true">
     <el-table-column fixed prop="job_name" label="招聘岗位" width="200" />
@@ -115,7 +115,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, reactive } from 'vue';
-import { getAllEmploy, getEmployById, getEmployByName, deleteEmploy, addEmploy, updateEmploy } from '../../api/employ'
+import { getAllEmploy, getEmployById, deleteEmploy, addEmploy, updateEmploy } from '../../api/employ'
 import { Response, RESPONSE_CODE, EmployList, Employ, DepartList } from '../../types/api'
 import { Search, Plus, InfoFilled, } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -155,8 +155,8 @@ const Addform = reactive({
 // 部门列表
 const depts = ref<any[]>([])
 
-const getData = async (curPage: number, pageSize: number) => {
-  const res: Response<EmployList> = await getAllEmploy(curPage, pageSize)
+const getData = async (curPage: number, pageSize: number, name: string) => {
+  const res: Response<EmployList> = await getAllEmploy(curPage, pageSize, name)
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.employ
     total.value = res.data.count
@@ -165,7 +165,7 @@ const getData = async (curPage: number, pageSize: number) => {
 }
 
 onMounted(() => {
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
   getDepts()
 })
 
@@ -218,7 +218,7 @@ const deleteStaffFunction = async (id: number) => {
   console.log(res)
   if (res.code === RESPONSE_CODE.OK) {
     console.log("删除成功")
-    getData(curPage.value, pageSize.value)
+    getData(curPage.value, pageSize.value, input.value)
     openSuccess("删除成功!")
     window.setTimeout(function () {
       window.location.reload();
@@ -242,7 +242,7 @@ const submitForm = async () => {
       console.log("更新成功");
       openSuccess("修改成功！")
       centerDialogVisible.value= false
-      getData(curPage.value, pageSize.value)
+      getData(curPage.value, pageSize.value, input.value)
       window.setTimeout(function () {
         window.location.reload();
       },1000)
@@ -272,7 +272,7 @@ const confirmClick = async() => {
       console.log('添加成功')
       drawer2.value = false
       openSuccess("添加成功！")
-      getData(curPage.value, pageSize.value)
+      getData(curPage.value, pageSize.value, input.value)
       window.setTimeout(function () {
         window.location.reload();
       },1000)
@@ -288,14 +288,8 @@ const cancelClick = () => {
 }
 
 // 根据部门名称搜索
-const searchByName = async (name: string) => {
-  const res: Response<EmployList> = await getEmployByName(curPage.value, pageSize.value, name)
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    tableData.value = res.data.employ
-    total.value = res.data.count
-    console.log(tableData)
-  }
+const searchByName = async () => {
+  getData(curPage.value, pageSize.value, input.value)
 }
 
 // 分页
@@ -304,7 +298,7 @@ const handleCurrentChange = (val: number) => {
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
 }
 
 </script>

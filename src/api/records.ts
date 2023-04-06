@@ -28,10 +28,10 @@ export const getMonthPunish = async (s_id: number, time: string) => {
   }
 }
 
-export const getAll = async (curPage: number, pageSize: number) => {
+export const getAll = async (curPage: number, pageSize: number, startDate: string, endDate: string, name: string) => {
   var config = {
     method: 'get',
-    url: `http://localhost:9090/record/getAll?curPage=${curPage}&pageSize=${pageSize}`,
+    url: `http://localhost:9090/record/getAll?curPage=${curPage}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}&name=${name}`,
     headers: { }
   };
 
@@ -42,52 +42,10 @@ export const getAll = async (curPage: number, pageSize: number) => {
   }
 }
 
-export const getAllByTime = async (curPage: number, pageSize: number, startDate: string, endDate: string) => {
+export const getSelf = async (curPage: number, pageSize: number, s_id: number, startDate: string, endDate: string) => {
   var config = {
     method: 'get',
-    url: `http://localhost:9090/record/getAllByTime?curPage=${curPage}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}`,
-    headers: { }
-  };
-
-  try {
-    return await axios(config).then(res => res.data)
-  } catch(error: any) {
-    return error
-  }
-}
-
-export const getAllByName = async (curPage: number, pageSize: number, name: string) => {
-  var config = {
-    method: 'get',
-    url: `http://localhost:9090/record/getAllByName?curPage=${curPage}&pageSize=${pageSize}&name=${name}`,
-    headers: { }
-  };
-
-  try {
-    return await axios(config).then(res => res.data)
-  } catch(error: any) {
-    return error
-  }
-}
-
-export const getSelf = async (curPage: number, pageSize: number, s_id: number) => {
-  var config = {
-    method: 'get',
-    url: `http://localhost:9090/record/getSelf?curPage=${curPage}&pageSize=${pageSize}&s_id=${s_id}`,
-    headers: { }
-  };
-
-  try {
-    return await axios(config).then(res => res.data)
-  } catch(error: any) {
-    return error
-  }
-}
-
-export const getSelfByTime = async (curPage: number, pageSize: number, s_id: number, startDate: string, endDate: string) => {
-  var config = {
-    method: 'get',
-    url: `http://localhost:9090/record/getSelfByTime?curPage=${curPage}&pageSize=${pageSize}&s_id=${s_id}&startDate=${startDate}&endDate=${endDate}`,
+    url: `http://localhost:9090/record/getSelf?curPage=${curPage}&pageSize=${pageSize}&s_id=${s_id}&startDate=${startDate}&endDate=${endDate}`,
     headers: { }
   };
 

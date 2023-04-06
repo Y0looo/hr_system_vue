@@ -1,7 +1,7 @@
 <template>
   <div class="block" >
     <el-input v-model="input" placeholder="请输入想搜索的员工姓名" style="width: 20%" />
-    <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName(input)">搜索</el-button>
+    <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName()">搜索</el-button>
     <el-date-picker
         v-model="month"
         type="monthrange"
@@ -151,8 +151,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, computed, ref, } from 'vue'
-import { getAll, getAllByName, getAllByTime, getById } from '../../api/salary'
+import { onMounted, ref, } from 'vue'
+import { getAll,  getById } from '../../api/salary'
 import { Response, RESPONSE_CODE, SalaryList, Salary } from '../../types/api'
 import { Search, } from '@element-plus/icons-vue'
 
@@ -163,7 +163,7 @@ const pageSize = ref(5)
 // 搜索框
 const input = ref('')
 // 时间选择器数据
-const month = ref('')
+const month = ref([])
 // 表格数据
 const tableData = ref([{}])
 // 弹出框
@@ -186,8 +186,8 @@ const info = ref({
   real_salary: 0
 })
 
-const getData = async (curPage: number, pageSize: number) => {
-  const res: Response<SalaryList> = await getAll(curPage, pageSize)
+const getData = async (curPage: number, pageSize: number, date1: string, date2: string, name: string) => {
+  const res: Response<SalaryList> = await getAll(curPage, pageSize, date1, date2, name)
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.salary
     total.value = res.data.count
@@ -197,41 +197,32 @@ const getData = async (curPage: number, pageSize: number) => {
 }
 
 onMounted(() => {
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, '', '', input.value)
 })
 
 //分页
 const handleCurrentChange = (val: number) => {
-  curPage.value = val
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, month.value[0] || '', month.value[1] || '', input.value)
 }
 
 // 时间筛选
 const calendarChange = (date: string) => {
   console.log(date[0], date[1]) 
-  getDataByTime(date[0], date[1])
+  getData(curPage.value, pageSize.value, date[0] || '', date[1] || '', input.value)
   // return date[0], date[1]
 }
-const getDataByTime = async (date1: string, date2: string) => {
-  const res: Response<SalaryList> = await getAllByTime(curPage.value, pageSize.value, date1, date2)
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    tableData.value = res.data.salary
-    total.value = res.data.count
-  }
-}
+
 
 // 搜索名称
-const searchByName = async (name: string) => {
-  const res: Response<SalaryList> = await getAllByName(curPage.value, pageSize.value, name)
+const searchByName = async () => {
+  const res: Response<SalaryList> = await getAll(curPage.value, pageSize.value, month.value[0] || '', month.value[1] || '', input.value)
   console.log(res);
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.salary
     total.value = res.data.count
-    input.value = ''
     console.log(tableData)
   }
 }

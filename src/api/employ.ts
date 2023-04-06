@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-export const getAllEmploy = async (curPage: number, pageSize: number) => {
+export const getAllEmploy = async (curPage: number, pageSize: number, name: string) => {
   var config = {
     method: 'get',
-    url: `http://localhost:9090/employ/getAll?curPage=${curPage}&pageSize=${pageSize}`,
+    url: `http://localhost:9090/employ/getAll?curPage=${curPage}&pageSize=${pageSize}&name=${name}`,
     headers: { }
   };
 
@@ -61,20 +61,6 @@ export const deleteEmploy = async (id: number) => {
     url: `http://localhost:9090/employ/delete?id=${id}`,
     headers: { },
     data : data
-  };
-
-  try {
-    return await axios(config).then(res => res.data)
-  } catch(error: any) {
-    return error
-  }
-}
-
-export const getEmployByName = async(curPage: number, pageSize: number, name: string) => {
-  var config = {
-    method: 'get',
-    url: `http://localhost:9090/employ/getByName?curPage=${curPage}&pageSize=${pageSize}&name=${name}`,
-    headers: { }
   };
 
   try {

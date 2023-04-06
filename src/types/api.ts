@@ -171,3 +171,14 @@ export type JobInfo = {
 export type JobInfoList = {
   job: JobInfo[],
 }
+
+export type Echarts = {
+  categories: string[],
+  data: number[],
+}
+
+export type DoubleEcharts = {
+  categories: string[],
+  data_first: number[],
+  data_second: number[],
+}

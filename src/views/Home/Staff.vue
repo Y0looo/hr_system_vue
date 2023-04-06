@@ -1,6 +1,6 @@
 <template>
-  <el-input v-model="input" placeholder="请输入想搜索的员工姓名" style="width: 20%" />
-  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName(input)">搜索</el-button>
+  <el-input v-model="input" placeholder="请输入想搜索的员工姓名" style="width: 20%"  clearable/>
+  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName()">搜索</el-button>
   <el-button type="primary" :icon="Plus" style="float:right" @click="drawer2 = true">新增员工</el-button>
   <el-table 
     :data="tableData" 
@@ -57,7 +57,7 @@
           <el-input v-model="form.account" style="width: 230px" readonly/>
         </el-form-item>
         <el-form-item label="密码" required prop="pwd">
-          <el-input v-model="form.pwd" style="width: 230px" />
+          <el-input v-model="form.pwd" show-password type="password" style="width: 230px" />
         </el-form-item>
         <el-form-item label="年龄" :rules="rules.age" prop="age">
           <el-input v-model="form.age" style="width: 230px"/>
@@ -116,7 +116,7 @@
         <el-input v-model="Addform.account" style="width: 215px"/>
       </el-form-item>
       <el-form-item label="密码"  prop="pwd">
-        <el-input v-model="Addform.pwd" style="width: 215px"/>
+        <el-input v-model="Addform.pwd" show-password type="password" style="width: 215px"/>
       </el-form-item>
       <el-form-item label="手机号"  prop="phone">
         <el-input v-model="Addform.phone" style="width: 215px"/>
@@ -196,7 +196,7 @@
 
 <script lang="ts" setup>
 import { onMounted,reactive,ref, } from 'vue'
-import { getAllStaff, getStaffById, deleteStaff, getStaffByName, addStaff, updateStaffByAdmin } from '../../api/staff'
+import { getAllStaff, getStaffById, deleteStaff, addStaff, updateStaffByAdmin } from '../../api/staff'
 import { getMonthReward, getMonthPunish } from '../../api/records'
 import { Response, RESPONSE_CODE, SalaryList, UserList, UserModel, Record, DepartList, JobInfoList } from '../../types/api'
 import { addSalary } from '../../api/salary'
@@ -226,7 +226,7 @@ const input = ref('')
 // 分页数据
 const total = ref(0)
 const curPage = ref(0)
-const pageSize = ref(10)
+const pageSize = ref(6)
 // 绩效等级
 const options = [
   {
@@ -354,8 +354,8 @@ const getJobs = async () => {
 }
 
 // 初次访问获取全部员工数据
-const getData = async (curPage: number, pageSize: number) => {
-  const res: Response<UserList> = await getAllStaff(curPage, pageSize)
+const getData = async (curPage: number, pageSize: number, name: string) => {
+  const res: Response<UserList> = await getAllStaff(curPage, pageSize, name)
   if (res.code === RESPONSE_CODE.OK) {
     // tableData.shift()
     // tableData.splice(0, tableData.length)
@@ -368,7 +368,7 @@ const getData = async (curPage: number, pageSize: number) => {
 }
 
 onMounted(() => {
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
   getDepts()
   getJobs()
 })
@@ -379,7 +379,7 @@ const deleteStaffFunction = async (id: number) => {
   console.log(res)
   if (res.code === RESPONSE_CODE.OK) {
     console.log("删除成功")
-    getData(curPage.value, pageSize.value)
+    getData(curPage.value, pageSize.value, input.value)
     openSuccess("删除成功!")
     window.setTimeout(function () {
       window.location.reload();
@@ -440,7 +440,7 @@ const submitForm = (form1: FormInstance | undefined) => {
         console.log("更新成功");
         openSuccess("修改成功！")
         centerDialogVisible.value= false
-        getData(curPage.value, pageSize.value)
+        getData(curPage.value, pageSize.value, input.value)
         // window.setTimeout(function () {
         //   window.location.reload();
         // },1000)
@@ -468,19 +468,8 @@ const resetForm = (form1: FormInstance | undefined) => {
 }
 
 // 根据员工名称搜索
-const searchByName = async (name: string) => {
-  const res: Response<UserList> = await getStaffByName(curPage.value, pageSize.value, name)
-  console.log(res);
-  // for(var i = 0; i <= tableData.length; ++i) {
-  //   delete tableData[i]
-  // }
-  if (res.code === RESPONSE_CODE.OK) {
-    console.log(tableData)
-    // // tableData.shift()
-    // tableData.push(...res.data.staff)
-    tableData.value = res.data.staff
-    console.log(tableData)
-  }
+const searchByName = async () => {
+  getData(curPage.value, pageSize.value, input.value)
 }
 
 const cancelEvent = () => {
@@ -502,7 +491,7 @@ const confirmClick = async() => {
         console.log('添加成功')
         drawer2.value = false
         openSuccess("添加成功！")
-        getData(curPage.value, pageSize.value)
+        getData(curPage.value, pageSize.value, input.value)
         // window.setTimeout(function () {
         //   window.location.reload();
         // },1000)
@@ -530,7 +519,7 @@ const handleCurrentChange = (val: number) => {
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
 }
 
 // 登记工资弹窗
@@ -559,7 +548,7 @@ const submitSalaryForm = async () => {
         dialog.value = false
         openSuccess("登记成功")
         resetSalaryForm()
-        getData(curPage.value, pageSize.value)
+        getData(curPage.value, pageSize.value, input.value)
         // window.setTimeout(function () {
         //   window.location.reload();
         // },1000)

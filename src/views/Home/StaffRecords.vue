@@ -36,13 +36,13 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { getSelf, getSelfByTime } from '../../api/records'
+import { getSelf } from '../../api/records'
 import { ElMessage } from 'element-plus'
 import { Response, RESPONSE_CODE, RecordList, Record } from '../../types/api'
 
 
 // 时间选择
-const date = ref('')
+const date = ref([])
 // 分页数据
 const total = ref(0)
 const curPage = ref(0)
@@ -51,11 +51,11 @@ const pageSize = ref(5)
 const tableData = ref([{}])
 
 onMounted(() => {
-  getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""))
+  getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""), '', '')
 })
 
-const getSelfData = async (curPage: number, pageSize: number, id: number) => {
-  const res: Response<RecordList> = await getSelf(curPage, pageSize, id)
+const getSelfData = async (curPage: number, pageSize: number, id: number, date1: string, date2: string) => {
+  const res: Response<RecordList> = await getSelf(curPage, pageSize, id, date1, date2)
   console.log(res);
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.record
@@ -70,25 +70,16 @@ const handleCurrentChange = (val: number) => {
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""))
+  getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""), date.value[0] || '', date.value[1] || '')
 }
 
 // 返回日期
 const calendarChange = (date: string) => {
   console.log(date[0], date[1]) 
-  getSelfDataByTime(date[0], date[1])
+  getSelfData(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id") || ""), date[0] || '', date[1] || '')
   // return date[0], date[1]
 }
 
-// 时间筛选
-const getSelfDataByTime = async (date1: string, date2: string) => {
-  const res: Response<RecordList> = await getSelfByTime(curPage.value, pageSize.value, parseInt(localStorage.getItem("s_id")||''), date1, date2, )
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    tableData.value = res.data.record
-    total.value = res.data.count
-  }
-}
 
 // 消息提示
 const openSuccess = (msg: string) => {

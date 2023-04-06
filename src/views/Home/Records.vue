@@ -1,7 +1,7 @@
 <template>
   <div class="block" >
   <el-input v-model="input" placeholder="请输入想搜索的员工姓名" style="width: 20%" />
-  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName(input)">搜索</el-button>
+  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName()">搜索</el-button>
   <el-button type="primary" :icon="Plus" @click="drawer2 = true">新增奖惩</el-button>
     <el-date-picker
       v-model="date"
@@ -127,12 +127,12 @@
 <script lang="ts" setup>
 import { onMounted, ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus'
-import { getAll, getAllByTime, getAllByName, getById, addRecord, deleteRecord, updateRecord } from '../../api/records'
+import { getAll, getById, addRecord, deleteRecord, updateRecord } from '../../api/records'
 import { Response, RESPONSE_CODE, RecordList, Record  } from '../../types/api'
 import { Search, Plus, InfoFilled } from '@element-plus/icons-vue'
 
 // 时间选择
-const date = ref('')
+const date = ref([])
 // 分页数据
 const total = ref(0)
 const curPage = ref(0)
@@ -177,12 +177,12 @@ const options = [
 ]
 
 onMounted(() => {
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, '', '', input.value)
 })
 
 // 全数据
-const getData = async (curPage: number, pageSize: number) => {
-  const res: Response<RecordList> = await getAll(curPage, pageSize)
+const getData = async (curPage: number, pageSize: number, date1: string, date2: string, name: string) => {
+  const res: Response<RecordList> = await getAll(curPage, pageSize, date1, date2, name)
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.record
     total.value = res.data.count
@@ -213,35 +213,19 @@ const handleCurrentChange = (val: number) => {
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, date.value[0] || '', date.value[1] || '', input.value)
 }
 
 // 时间筛选
 const calendarChange = (date: string) => {
   console.log(date[0], date[1]) 
-  getDataByTime(date[0], date[1])
+  getData(curPage.value, pageSize.value, date[0], date[1], input.value)
   // return date[0], date[1]
-}
-const getDataByTime = async (date1: string, date2: string) => {
-  const res: Response<RecordList> = await getAllByTime(curPage.value, pageSize.value, date1, date2)
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    tableData.value = res.data.record
-    total.value = res.data.count
-  }
 }
 
 // 搜索名称
-const searchByName = async (name: string) => {
-  const res: Response<RecordList> = await getAllByName(curPage.value, pageSize.value, name)
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    console.log(tableData)
-    tableData.value = res.data.record
-    total.value = res.data.count
-    input.value = ''
-    console.log(tableData)
-  }
+const searchByName = async () => {
+  getData(curPage.value, pageSize.value, date.value[0] || '', date.value[1] || '', input.value)
 }
 
 // 删除奖惩
@@ -250,7 +234,7 @@ const deleteRecordsFunction = async (id: number) => {
   console.log(res)
   if (res.code === RESPONSE_CODE.OK) {
     console.log("删除成功")
-    getData(curPage.value, pageSize.value)
+    getData(curPage.value, pageSize.value, date.value[0] || '', date.value[1] || '', input.value)
     openSuccess("删除成功!")
     // window.setTimeout(function () {
     //   window.location.reload();

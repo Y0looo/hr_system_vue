@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted,reactive,ref, } from 'vue'
-import { getSelf, getSelfByTime } from '../../api/salary'
+import { onMounted, ref, } from 'vue'
+import { getSelf } from '../../api/salary'
 import { Response, RESPONSE_CODE, SalaryList, Salary } from '../../types/api'
 
 // 分页数据
@@ -49,12 +49,12 @@ const total = ref(0)
 const curPage = ref(0)
 const pageSize = ref(10)
 // 月份选择器
-const month = ref('')
+const month = ref([])
 // 表格数据
 const tableData = ref([{}])
 
-const getData = async (curPage: number, pageSize: number) => {
-  const res: Response<SalaryList> = await getSelf(curPage, pageSize, parseInt(localStorage.getItem("s_id")||''))
+const getData = async (curPage: number, pageSize: number, date1: string, date2: string) => {
+  const res: Response<SalaryList> = await getSelf(curPage, pageSize, parseInt(localStorage.getItem("s_id")||''), date1, date2)
   if (res.code === RESPONSE_CODE.OK) {
     // tableData.shift()
     // tableData.splice(0, tableData.length)
@@ -67,13 +67,13 @@ const getData = async (curPage: number, pageSize: number) => {
 }
 
 onMounted(() => {
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, '', '')
 })
 
 // 返回日期
 const calendarChange = (date: string) => {
   console.log(date[0], date[1]) 
-  getSelfDataByTime(date[0], date[1])
+  getData(curPage.value, pageSize.value, date[0], date[1])
   // return date[0], date[1]
 }
 
@@ -83,16 +83,7 @@ const handleCurrentChange = (val: number) => {
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, month.value[0] || '', month.value[1] || '')
 }
 
-// 时间筛选
-const getSelfDataByTime = async (date1: string, date2: string) => {
-  const res: Response<SalaryList> = await getSelfByTime(curPage.value, pageSize.value, date1, date2, parseInt(localStorage.getItem("s_id")||''))
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    tableData.value = res.data.salary
-    total.value = res.data.count
-  }
-}
 </script>

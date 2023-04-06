@@ -1,6 +1,6 @@
 <template>
   <el-input v-model="input" placeholder="请输入公告标题" style="width: 20%" />
-  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName(input)">搜索</el-button>
+  <el-button type="primary" :icon="Search" style="margin-left: 10px;" @click="searchByName()">搜索</el-button>
   <el-button type="primary" :icon="Plus" style="float:right" @click="drawer2 = true">新增公告</el-button>
   <el-table :data="tableData" style="width: 100%;margin-top: 20px" border="true" >
     <el-table-column fixed prop="title" label="标题" width="250" />
@@ -86,7 +86,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, reactive } from 'vue';
-import { getAllNotice, getNoticeByName, addNotice, updateNotice, deleteNotice, getNoticeById } from '../../api/notice'
+import { getAllNotice, addNotice, updateNotice, deleteNotice, getNoticeById } from '../../api/notice'
 import { Response, RESPONSE_CODE, NoticeList, Notice } from '../../types/api'
 import { Search, Plus, InfoFilled, } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -123,8 +123,8 @@ const Addform = reactive({
   publisher: '',
 })
 
-const getData = async (curPage: number, pageSize: number) => {
-  const res: Response<NoticeList> = await getAllNotice(curPage, pageSize)
+const getData = async (curPage: number, pageSize: number, name: string) => {
+  const res: Response<NoticeList> = await getAllNotice(curPage, pageSize, name)
   console.log(res);
   
   if (res.code === RESPONSE_CODE.OK) {
@@ -136,7 +136,7 @@ const getData = async (curPage: number, pageSize: number) => {
 }
 
 onMounted(() => {
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
   
 })
 
@@ -157,16 +157,8 @@ const openError = (msg: string) => {
 }
 
 // 根据公告名称搜索
-const searchByName = async (name: string) => {
-  const res: Response<NoticeList> = await getNoticeByName(curPage.value, pageSize.value, name)
-  console.log(res);
-  if (res.code === RESPONSE_CODE.OK) {
-    console.log(tableData)
-    // tableData.shift()
-    tableData.value = res.data.notice
-    total.value = res.data.count
-    console.log(tableData)
-  }
+const searchByName = async () => {
+  getData(curPage.value, pageSize.value, input.value)
 }
 
 const handleClick = () => {
@@ -185,7 +177,7 @@ const confirmClick = async() => {
       console.log('添加成功')
       drawer2.value = false
       openSuccess("添加成功！")
-      getData(curPage.value, pageSize.value)
+      getData(curPage.value, pageSize.value, input.value)
       // window.setTimeout(function () {
       //   window.location.reload();
       // },1000)
@@ -213,7 +205,7 @@ const submitForm = async () => {
       console.log("更新成功");
       openSuccess("修改成功！")
       centerDialogVisible.value= false
-      getData(curPage.value, pageSize.value)
+      getData(curPage.value, pageSize.value, input.value)
       window.setTimeout(function () {
         window.location.reload();
       },1000)
@@ -249,7 +241,7 @@ const deleteStaffFunction = async (id: number) => {
   console.log(res)
   if (res.code === RESPONSE_CODE.OK) {
     console.log("删除成功")
-    getData(curPage.value, pageSize.value)
+    getData(curPage.value, pageSize.value, input.value)
     openSuccess("删除成功!")
     window.setTimeout(function () {
       window.location.reload();
@@ -270,7 +262,7 @@ const handleCurrentChange = (val: number) => {
   console.log(val);
   const i = (val-1)*5
   curPage.value = i
-  getData(curPage.value, pageSize.value)
+  getData(curPage.value, pageSize.value, input.value)
 }
 
 </script>
