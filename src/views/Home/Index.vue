@@ -14,54 +14,54 @@
                 <span><router-link to="/home/staff"
                     style="text-decoration: none; color: black; font-size: 20px;" >员工管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="2" v-if="user.role == '人事管理员'">
+              <el-menu-item index="2" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon>
                   <House />
                 </el-icon>
                 <span><router-link to="/home/dept"
                     style="text-decoration: none; color: black; font-size: 20px;">部门管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="3" v-if="user.role == '人事管理员'">
+              <el-menu-item index="3" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon>
                   <document />
                 </el-icon>
                 <span><router-link to="/home/salary"
                     style="text-decoration: none; color: black; font-size: 20px;">薪资管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="4" v-if="user.role == '人事管理员'">
+              <el-menu-item index="4" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon><icon-menu /></el-icon>
                 <span><router-link to="/home/job"
                     style="text-decoration: none; color: black; font-size: 20px;">岗位管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="5" v-if="user.role == '人事管理员'">
+              <el-menu-item index="5" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon>
                   <DocumentCopy />
                 </el-icon>
                 <span><router-link to="/home/attend"
                     style="text-decoration: none; color: black; font-size: 20px;">考勤管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="6" v-if="user.role == '人事管理员'">
+              <el-menu-item index="6" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon>
                   <ChatDotSquare />
                 </el-icon>
                 <span><router-link to="/home/employ"
                     style="text-decoration: none; color: black; font-size: 20px;">招聘管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="7" v-if="user.role == '人事管理员'">
+              <el-menu-item index="7" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon>
                   <Bell />
                 </el-icon>
                 <span><router-link to="/home/notice"
                     style="text-decoration: none; color: black; font-size: 20px;">公告管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="8" v-if="user.role == '人事管理员'">
+              <el-menu-item index="8" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon>
                   <Memo />
                 </el-icon>
                 <span><router-link to="/home/records"
                     style="text-decoration: none; color: black; font-size: 20px;">奖惩管理</router-link></span>
               </el-menu-item>
-              <el-menu-item index="9" v-if="user.role == '人事管理员'">
+              <el-menu-item index="9" v-if="user.role == '人事管理员' || user.role == '系统管理员'">
                 <el-icon>
                   <Histogram />
                 </el-icon>

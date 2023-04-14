@@ -115,7 +115,7 @@
       <el-form-item label="账号"  prop="account" >
         <el-input v-model="Addform.account" style="width: 215px"/>
       </el-form-item>
-      <el-form-item label="密码"  prop="pwd">
+      <el-form-item label="初始密码"  prop="pwd">
         <el-input v-model="Addform.pwd" show-password type="password" style="width: 215px"/>
       </el-form-item>
       <el-form-item label="手机号"  prop="phone">
@@ -198,8 +198,8 @@
 import { onMounted,reactive,ref, } from 'vue'
 import { getAllStaff, getStaffById, deleteStaff, addStaff, updateStaffByAdmin } from '../../api/staff'
 import { getMonthReward, getMonthPunish } from '../../api/records'
-import { Response, RESPONSE_CODE, SalaryList, UserList, UserModel, Record, DepartList, JobInfoList } from '../../types/api'
-import { addSalary } from '../../api/salary'
+import { Response, RESPONSE_CODE, SalaryList, UserList, UserModel, Record, DepartList, JobInfoList, Salary } from '../../types/api'
+import { addSalary, getLastSalary } from '../../api/salary'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { Search, Plus, InfoFilled, } from '@element-plus/icons-vue'
@@ -525,6 +525,7 @@ const handleCurrentChange = (val: number) => {
 // 登记工资弹窗
 const openSalary = async (id: number) => {
   dialog.value = true
+  resetSalaryForm()
   const res: Response<UserModel> = await getStaffById(id)
   if(res.code === RESPONSE_CODE.OK) {
     salaryForm.s_id = res.data.s_id.toString(),
@@ -570,7 +571,7 @@ const resetSalaryForm = () => {
   salaryForm.qtkk = '' 
 }
 
-// 获取当月奖金和罚款
+// 获取当月奖金和罚款和上月工资
 const getRewardAndPunish = async (s_id: number, time: string) => {
   const res1: Response<Record> = await getMonthReward(s_id, time)
   if(res1.code === RESPONSE_CODE.OK) {
@@ -579,10 +580,18 @@ const getRewardAndPunish = async (s_id: number, time: string) => {
     salaryForm.qtjj = '0'
   }
   const res2: Response<Record> = await getMonthPunish(s_id, time)
-    if(res2.code === RESPONSE_CODE.OK) {
+  if(res2.code === RESPONSE_CODE.OK) {
     salaryForm.qtkk = res2.data.toString()
   } else {
     salaryForm.qtkk = '0'
+  }
+  const res3: Response<Salary> = await getLastSalary(s_id)
+  if(res3.code === RESPONSE_CODE.OK) {
+    salaryForm.jcgz = res3.data.jcgz.toString(),
+    salaryForm.jxgz = res3.data.jxgz.toString()
+  } else {
+    salaryForm.jcgz = ''
+    salaryForm.jxgz = ''
   }
 }
 </script>

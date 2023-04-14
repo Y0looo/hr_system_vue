@@ -14,6 +14,19 @@ export const getSelf = async (curPage: number, pageSize: number, s_id: number, s
   }
 }
 
+export const getLastSalary = async (s_id: number) => {
+  var config = {
+    method: 'get',
+    url: `http://localhost:9090/salary/getLast?id=${s_id}`,
+    headers: { }
+  };
+
+  try {
+    return await axios(config).then(res => res.data)
+  } catch(error: any) {
+    return error
+  }
+}
 
 export const getAll = async (curPage: number, pageSize: number, startDate: string, endDate: string, name: string) => {
   var config = {
