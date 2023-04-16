@@ -202,7 +202,6 @@ onMounted(() => {
 
 //分页
 const handleCurrentChange = (val: number) => {
-  console.log(val);
   const i = (val-1)*5
   curPage.value = i
   getData(curPage.value, pageSize.value, month.value[0] || '', month.value[1] || '', input.value)
@@ -212,7 +211,6 @@ const handleCurrentChange = (val: number) => {
 const calendarChange = (date: string) => {
   console.log(date[0], date[1]) 
   getData(curPage.value, pageSize.value, date[0] || '', date[1] || '', input.value)
-  // return date[0], date[1]
 }
 
 
@@ -223,7 +221,6 @@ const searchByName = async () => {
   if (res.code === RESPONSE_CODE.OK) {
     tableData.value = res.data.salary
     total.value = res.data.count
-    console.log(tableData)
   }
 }
 

@@ -233,12 +233,8 @@ const deleteRecordsFunction = async (id: number) => {
   const res: Response<Record> = await deleteRecord(id)
   console.log(res)
   if (res.code === RESPONSE_CODE.OK) {
-    console.log("删除成功")
     getData(curPage.value, pageSize.value, date.value[0] || '', date.value[1] || '', input.value)
     openSuccess("删除成功!")
-    // window.setTimeout(function () {
-    //   window.location.reload();
-    // },1000)
   } else {
     openError("删除失败，请稍后重试！")
   }
@@ -271,7 +267,6 @@ const submitForm = async () => {
     const res: Response<Record> = await updateRecord(parseInt(form.s_id), form.time, parseInt(form.money), form.content)
     console.log(res);
     if(res.code === RESPONSE_CODE.OK) {
-      console.log('修改成功')
       centerDialogVisible.value = false
       openSuccess("修改成功")
     } else {

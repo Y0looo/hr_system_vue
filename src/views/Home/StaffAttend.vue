@@ -44,7 +44,6 @@ import { onMounted, ref } from 'vue';
 import { getSelf, workArrive, workLeave } from '../../api/attend'
 import { ElMessage } from 'element-plus'
 import { Response, RESPONSE_CODE, AttendList, Attend } from '../../types/api'
-import { dataTool } from 'echarts';
 
 
 // 时间选择
@@ -136,16 +135,6 @@ const leave = async () => {
     }
   }
 }
-
-// // 时间筛选
-// const getSelfDataByTime = async (date1: string, date2: string) => {
-//   const res: Response<AttendList> = await getSelfByTime(curPage.value, pageSize.value, date1, date2, parseInt(localStorage.getItem("s_id")||''))
-//   console.log(res);
-//   if (res.code === RESPONSE_CODE.OK) {
-//     tableData.value = res.data.attend
-//     total.value = res.data.count
-//   }
-// }
 
 // 消息提示
 const openSuccess = (msg: string) => {

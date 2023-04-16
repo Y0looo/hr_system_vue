@@ -169,9 +169,7 @@ const deleteStaffFunction = async (id: number) => {
       console.log("删除成功")
       getData(curPage.value, pageSize.value, input.value)
       openSuccess("删除成功!")
-      window.setTimeout(function () {
-        window.location.reload();
-      },1000)
+
     } else {
       openError("删除失败，请稍后重试！")
     }
@@ -193,9 +191,6 @@ const submitForm = async () => {
       openSuccess("修改成功！")
       centerDialogVisible.value= false
       getData(curPage.value, pageSize.value, input.value)
-      window.setTimeout(function () {
-        window.location.reload();
-      },1000)
     } else {
       console.log("更新失败")
       openError("修改失败，请稍后重试！")
@@ -220,9 +215,6 @@ const confirmClick = async() => {
       drawer2.value = false
       openSuccess("添加成功！")
       getData(curPage.value, pageSize.value, input.value)
-      window.setTimeout(function () {
-        window.location.reload();
-      },1000)
     } else {
       openError("添加失败，请稍后重试！")
       console.log("添加失败");

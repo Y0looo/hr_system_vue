@@ -72,7 +72,7 @@
           <el-input v-model="form.code" style="width: 230px"/>
         </el-form-item>
         <el-form-item label="部门名称" required prop="dept_name">
-          <el-select v-model="form.dept_name" clearable class="m-2" placeholder="请选择部门" style="width: 230px">
+          <el-select v-model="form.dept_name"  class="m-2" placeholder="请选择部门" style="width: 230px">
             <el-option
               v-for="item in depts"
               :label="item.dept_name"
@@ -83,7 +83,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="岗位名称" required prop="job_name">
-          <el-select v-model="form.job_name" clearable class="m-2" placeholder="请选择岗位" style="width: 230px">
+          <el-select v-model="form.job_name" class="m-2" placeholder="请选择岗位" style="width: 230px">
             <el-option
               v-for="item in jobs"
               :label="item.job_name"
@@ -357,13 +357,8 @@ const getJobs = async () => {
 const getData = async (curPage: number, pageSize: number, name: string) => {
   const res: Response<UserList> = await getAllStaff(curPage, pageSize, name)
   if (res.code === RESPONSE_CODE.OK) {
-    // tableData.shift()
-    // tableData.splice(0, tableData.length)
-    // tableData.push(...res.data.staff)
     tableData.value = res.data.staff
     total.value = res.data.count
-    console.log(res.data.count)
-    console.log(tableData)
   }
 }
 
@@ -378,12 +373,8 @@ const deleteStaffFunction = async (id: number) => {
   const res: Response<UserModel> = await deleteStaff(id)
   console.log(res)
   if (res.code === RESPONSE_CODE.OK) {
-    console.log("删除成功")
     getData(curPage.value, pageSize.value, input.value)
     openSuccess("删除成功!")
-    window.setTimeout(function () {
-      window.location.reload();
-    },1000)
   } else {
     openError("删除失败，请稍后重试！")
   }
@@ -425,7 +416,6 @@ const show = async (id: number) => {
     form.dept_name = res.data.dept_name,
     form.job_name = res.data.job_name,
     form.address = res.data.address
-    console.log(res.data)
   }
 }
 
@@ -437,15 +427,10 @@ const submitForm = (form1: FormInstance | undefined) => {
       const res: Response<UserModel> = await updateStaffByAdmin(parseInt(form.s_id), form.pwd, form.phone, form.code, parseInt(form.age), form.address, parseInt(form.dept_name), parseInt(form.job_name), form.educated)
       console.log(res)
       if (res.code === RESPONSE_CODE.OK) {
-        console.log("更新成功");
         openSuccess("修改成功！")
         centerDialogVisible.value= false
         getData(curPage.value, pageSize.value, input.value)
-        // window.setTimeout(function () {
-        //   window.location.reload();
-        // },1000)
       } else {
-        console.log("更新失败")
         openError("修改失败，请稍后重试！")
       }
     } else {
@@ -488,13 +473,9 @@ const confirmClick = async() => {
       openError("添加失败，该账户已存在！")
     } else {
       if(res.code === RESPONSE_CODE.OK) {
-        console.log('添加成功')
         drawer2.value = false
         openSuccess("添加成功！")
         getData(curPage.value, pageSize.value, input.value)
-        // window.setTimeout(function () {
-        //   window.location.reload();
-        // },1000)
       } else {
         openError("添加失败，请稍后重试！")
         console.log("添加失败");
@@ -545,17 +526,12 @@ const submitSalaryForm = async () => {
       openError("登记失败，此员工已登记！")
     } else {
       if(res.code === RESPONSE_CODE.OK) {
-        console.log('登记成功')
         dialog.value = false
         openSuccess("登记成功")
         resetSalaryForm()
         getData(curPage.value, pageSize.value, input.value)
-        // window.setTimeout(function () {
-        //   window.location.reload();
-        // },1000)
       } else {
         openError("登记失败，请稍后重试！")
-        console.log("登记失败");
       }
     }
   }
